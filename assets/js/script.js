@@ -61,6 +61,10 @@ if (navigator.geolocation) {
     map.setView([39.925533, 32.866287], 6); // Ankara
 }
 
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+}).addTo(map);
+
 const socket = io(); // Socket.io bağlantısı
 const chatButton = document.getElementById('chatButton'); // Sohbet kutusunu açma butonu
 const chatBox = document.getElementById('chatBox'); // Sohbet kutusu
