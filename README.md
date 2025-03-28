@@ -34,9 +34,9 @@ Projenin kendi bilgisayarınızda çalışması için aşağıdaki adımları iz
 ## 🌟 Katkıda Bulunanlar
 Bu proje topluluğun desteğiyle geliştirilmektedir. Aşağıda projeye katkıda bulunan geliştiricilere teşekkür ederiz:
 
-- **Akif DORA** (Proje Yöneticisi ve Full Stack Geliştirici) • **[Github](https://github.com/akifdora)** | **[Instagram](https://instagram.com/akiifdora)** | **[Twitter/X](https://x.com/akifdora)**
-- **Ömer SEVEN** (Topluluk Yöneticisi ve Test Ekibi) • **[Instagram](https://instagram.com/omerfseven)** | **[Twitter/X](https://x.com/omerfseven)**
-- **Berat KUŞBAZOĞLU** (UI/UX Tasarımcısı ve Test Ekibi) • **[Instagram](http://instagram.com/beratt808)** | **[Twitter/X](http://x.com/808berat)**
+- **Akif** (Proje Yöneticisi ve Full Stack Geliştirici) • **[Github](https://github.com/akifdora)** | **[Instagram](https://instagram.com/akiifdora)** | **[Twitter/X](https://x.com/akifdora)**
+- **Ömer** (Topluluk Yöneticisi ve Test Ekibi) • **[Instagram](https://instagram.com/omerfseven)** | **[Twitter/X](https://x.com/omerfseven)**
+- **Berat** (UI/UX Tasarımcısı ve Test Ekibi) • **[Instagram](http://instagram.com/beratt808)** | **[Twitter/X](http://x.com/808berat)**
 - **Topluluğun Desteği** - Sizlerin geri bildirimleri ve katkıları projemizi büyütüyor. ✨
 
 ## 📄 Lisans
