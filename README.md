@@ -1,2 +1,1 @@
-# HalkHarita
- #HalkHarita toplumsal olayları harita üzerinde anlık olarak paylaşan basit bir platformdur. Proje herhangi bir geliri yoktur, kişisel çıkar gütmemektedir.
+<p align="center"><img src="https://socialify.git.ci/akifdora/HalkHarita/image?description=1&font=Raleway&forks=1&issues=1&language=1&name=1&owner=1&pulls=1&stargazers=1&theme=Light" alt="Halk Harita"></p>
