@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Halk Harita</title>
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <!-- Harita -->
+    <div id="map"></div>
+
+    <!-- Çevrimiçi Kullanıcı Alanı -->
+    <button id="userCountDisplay">Çevrimiçi: 0</button>
+
+    <!-- Versiyon ve Copyright Alanı -->
+    <button id="hhCopyright">Halk Harita &copy; v0.2 </button>
+
+    <!-- Menü Alanı -->
+    <button id="menuButton"><img src="img/menu.png"></button>
+    <div id="menuDropdown">
+        <a href="#">Sayfalar eklenecek.</a>
+    </div>
+
+    <!-- Konum Bul Butonu -->
+    <button id="gotoLocationButton"><img src="img/get-location.png"></button>
+
+    <!-- Sohbet Alanı -->
+    <button id="chatButton"><img src="img/chat.png"></button>
+    <div id="chatBox">
+        <div id="messageContainer"></div>
+        <div>
+            <input type="text" id="messageInput" placeholder="Mesajınızı yazın...">
+            <button id="sendButton">Gönder</button>
+        </div>
+    </div>
+
+    <!-- Emoji Anlamları Alanı -->
+    <button id="emojiButton"><img src="img/info.png"></button>
+    <div id="emojiDropdown">
+        <p>🛑 Gözaltı Bölgesi</p>
+        <p>💊 İlaç Bölgesi</p>
+        <p>🚧 Barikat</p>
+        <p>🌶 Biber Gazı</p>
+        <p>🚔 TOMA</p>
+        <p>👮‍♂️ Polis Ekibi</p>
+        <p>👤 Sivil Polis</p>
+        <p>✅ Sığınma Alanı</p>
+        <p>⚠️ Riskli Bölge</p>
+    </div>
+
+    <!-- Bildirim Alanı -->
+    <div id="reportMenu">
+        <!-- Bildirim Türleri -->
+        <select id="reportType">
+            <option value="🛑 Gözaltı Bölgesi">🛑 Gözaltı Bölgesi</option>
+            <option value="💊 İlaç Bölgesi">💊 İlaç Bölgesi</option>
+            <option value="🚧 Barikat">🚧 Barikat</option>
+            <option value="🌶 Biber Gazı">🌶 Biber Gazı</option>
+            <option value="🚔 TOMA">🚔 TOMA</option>
+            <option value="👮‍♂️ Polis Ekibi">👮‍♂️ Polis Ekibi</option>
+            <option value="👤 Sivil Polis">👤 Sivil Polis</option>
+            <option value="✅ Sığınma Alanı">✅ Sığınma Alanı</option>
+            <option value="⚠️ Riskli Bölge">⚠️ Riskli Bölge</option>
+        </select>
+    
+        <!-- Not Ekleme Alanı -->
+        <textarea id="reportNote" maxlength="120" placeholder="Bu bildirim hakkında bir not bırakın, zorunlu değil (120 karakter)"></textarea>
+        
+        <!-- Butonlar -->
+        <div class="button-container">
+            <button class="cancelButton" onclick="closeReportMenu()">İptal</button>
+            <button onclick="sendReport()">Bildirim Gönder</button>
+        </div>
+    </div>
+
+    <!-- Uyarı Alanı -->
+    <div id="customAlert" class="alert-container">
+        <div class="alert-box">
+            <span id="alertMessage"></span>
+            <button onclick="closeAlert()" class="alert-close-btn">&times;</button>
+        </div>
+    </div>
+
+    <!-- Kayan Yazı Alanı -->
+    <div class="scrolling-container">
+        <div class="scrolling-text">Harita yüklenmezse sağ alttaki butona tıklayarak konumunuzu belirleyebilirsiniz! • Sohbet bölümünde insanlarla iletişime geçebilirsiniz! • Bildirim eklemek için haritaya tıklayın ve açılan menüden seçiminizi yapın! • Sol üstteki butondan bildirimlerin anlamlarını öğrenebilirsiniz! • Sağ üstteki butondan diğer sayfalara ulaşabilirsiniz!</div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
