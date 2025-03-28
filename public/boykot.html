@@ -77,7 +77,7 @@
             background-color: #f1f1f1;
         }
 
-        /* Alert Box Stili */
+        /* Alert Box */
         #alertBox {
             background-color: #F59E0B; /* Sarı tonlarında arka plan */
             color: white; /* Yazı rengi beyaz */
@@ -114,23 +114,38 @@
             <i class="fas fa-exclamation-triangle mr-3"></i>Boykot listesi bulunan sitelere diktatör rejim tarafından erişim engeli uygulanmaktadır!
         </div>
 
+        <!-- Marka Sayısı -->
+        <p id="brandCountText" class="text-gray-400 text-xs mb-2"></p>
+
+        <!-- Arama Alanı -->
         <input 
         type="text" 
         id="searchInput" 
         placeholder="Boykot markası arayın..." 
         class="w-full p-3 mb-4 border border-gray-600 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-
+        
+        <!-- Liste -->
         <div id="brandList" class="space-y-4"></div>
     </div>
 
     <script>
-        const menuButton = document.getElementById('menuButton'); // Menü butonu
-        const menuDropdown = document.getElementById('menuDropdown'); // Menü dropdown
+        const menuButton = document.getElementById('menuButton');
+        const menuDropdown = document.getElementById('menuDropdown');
 
         // Menü dropdown açma ve kapama
         menuButton.addEventListener('click', () => {
             menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
         });
+
+        // Marka sayısını al ve alt metni güncelle
+        fetch('/api/brands/count')
+            .then(response => response.json())
+            .then(data => {
+                const brandCount = data.count;
+                document.getElementById('brandCountText').textContent = `Listede ${brandCount} adet boykot markası bulunmaktadır.`;
+            })
+            .catch(error => console.error('Veri çekme hatası:', error));
+
 
         // Verileri almak için fetch kullanıyoruz
         fetch('/api/brands')

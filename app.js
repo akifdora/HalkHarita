@@ -89,13 +89,23 @@ app.get('/getStatics', async (req, res) => {
     }
 });
 
-// API: Marka verilerini al
+// Marka verilerini alan endpoint
 app.get('/api/brands', async (req, res) => {
     try {
         const brands = await Brand.find();  // Veritabanındaki tüm markaları al
         res.json(brands);  // JSON olarak döndür
     } catch (err) {
         res.status(500).json({ message: 'Sunucu hatası' });
+    }
+});
+
+// Marka sayısını döndüren endpoint
+app.get('/api/brands/count', async (req, res) => {
+    try {
+        const count = await Brand.countDocuments();
+        res.json({ count });
+    } catch (err) {
+        res.status(500).json({ error: 'Marka sayısı alınamadı' });
     }
 });
 
