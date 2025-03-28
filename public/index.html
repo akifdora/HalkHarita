@@ -15,8 +15,14 @@
     <!-- Harita -->
     <div id="map"></div>
 
-    <!-- Çevrimiçi Kullanıcı Alanı -->
-    <button id="userCountDisplay">Çevrimiçi: 0</button>
+    <!-- Çevrimiçi Kullanıcı Sayısı -->
+    <button id="onlineUsers">Çevrimiçi: 0</button>
+
+    <!-- Toplam Mesaj Sayısı -->
+    <button id="totalMessages">Toplam Mesaj: 0</button>
+
+    <!-- Toplam Bildirim Sayısı -->
+    <button id="totalReports">Toplam Bildirim: 0</button>
 
     <!-- Versiyon ve Copyright Alanı -->
     <button id="hhCopyright">Halk Harita &copy; v0.2 </button>
@@ -24,7 +30,8 @@
     <!-- Menü Alanı -->
     <button id="menuButton"><img src="img/menu.png"></button>
     <div id="menuDropdown">
-        <a href="#">Sayfalar eklenecek.</a>
+        <a href="/">Harita</a>
+        <a href="/boykot">Boykot Listesi</a>
     </div>
 
     <!-- Konum Bul Butonu -->
@@ -34,9 +41,9 @@
     <button id="chatButton"><img src="img/chat.png"></button>
     <div id="chatBox">
         <div id="messageContainer"></div>
-        <div>
+        <div id="messageInputContainer">
             <input type="text" id="messageInput" placeholder="Mesajınızı yazın...">
-            <button id="sendButton">Gönder</button>
+            <button id="sendButton"><img src="img/send.png"></button>
         </div>
     </div>
 

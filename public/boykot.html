@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boykot Listesi</title>
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Menü ve Logo İçin Kapsayıcı */
+        #fixedHeader {
+            position: fixed; /* Sabit pozisyon */
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Logo */
+        #hhLogo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Menü Butonu */
+        #menuButton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0;
+            font-size: 1rem;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Menü Dropdown */
+        #menuDropdown {
+            display: none;
+            position: absolute;
+            top: 55px;
+            right: 15px;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            font-size: 0.9rem;
+            width: 200px;
+            z-index: 1000;
+        }
+
+        #menuDropdown a {
+            display: block;
+            padding: 10px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #menuDropdown a:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Alert Box Stili */
+        #alertBox {
+            background-color: #F59E0B; /* Sarı tonlarında arka plan */
+            color: white; /* Yazı rengi beyaz */
+            font-size: 0.75rem;
+            font-weight: 400;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px; /* Input ile araya boşluk ekliyoruz */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 p-4">
+    <!-- Menü ve Logo Kapsayıcı Div -->
+    <div id="fixedHeader" class="fixed w-full z-50 top-0 left-0 flex justify-between items-center p-3 bg-gray-900">
+        <div id="hhLogo">
+            <a href="/"><img src="img/favicon.png" alt="Logo" class="w-10 h-10"></a>
+        </div>
+
+        <button id="menuButton">
+            <img src="img/menu.png" alt="Menu Icon" class="w-6 h-6">
+        </button>
+
+        <!-- Menü Dropdown -->
+        <div id="menuDropdown" class="hidden absolute top-16 right-15 bg-white shadow-md rounded-lg w-48">
+            <a href="/">Harita</a>
+            <a href="/boykot">Boykot Listesi</a>
+        </div>
+    </div>
+
+    <!-- İçerik Alanı -->
+    <div class="max-w-4xl mx-auto brandList mt-16">
+        <!-- Duyuru Mesajı -->
+        <div id="alertBox" class="bg-yellow-500 text-white p-4 rounded-lg mb-4">
+            <i class="fas fa-exclamation-triangle mr-3"></i>Boykot listesi bulunan sitelere diktatör rejim tarafından erişim engeli uygulanmaktadır!
+        </div>
+
+        <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Boykot markası arayın..." 
+        class="w-full p-3 mb-4 border border-gray-600 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+
+        <div id="brandList" class="space-y-4"></div>
+    </div>
+
+    <script>
+        const menuButton = document.getElementById('menuButton'); // Menü butonu
+        const menuDropdown = document.getElementById('menuDropdown'); // Menü dropdown
+
+        // Menü dropdown açma ve kapama
+        menuButton.addEventListener('click', () => {
+            menuDropdown.style.display = menuDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Verileri almak için fetch kullanıyoruz
+        fetch('/api/brands')
+            .then(response => response.json())
+            .then(data => {
+                const brandList = document.getElementById('brandList');
+
+                // Markaları döngüyle sayfada listele
+                data.forEach(brand => {
+                    const brandCard = document.createElement('div');
+                    brandCard.classList.add('brand-card', 'flex', 'items-center', 'bg-gray-800', 'border', 'border-gray-700', 'rounded-lg', 'shadow-sm');
+                    
+                    // Logo ekleme
+                    const brandImage = document.createElement('img');
+                    brandImage.classList.add('object-fit', 'w-16', 'h-16', 'rounded-s-lg');
+                    brandImage.src = brand.logo;
+                    brandImage.alt = brand.name;
+
+                    // Marka adı ekleme
+                    const brandName = document.createElement('h5');
+                    brandName.classList.add('text-xl', 'font-bold', 'text-white');
+                    brandName.textContent = brand.name;
+
+                    // Markayı card'a ekleme
+                    const cardContent = document.createElement('div');
+                    cardContent.classList.add('p-4', 'flex-1');
+                    cardContent.appendChild(brandName);
+
+                    brandCard.appendChild(brandImage);
+                    brandCard.appendChild(cardContent);
+
+                    brandList.appendChild(brandCard);
+                });
+
+                // Arama işlemi
+                searchInput.addEventListener('input', () => {
+                    const searchValue = searchInput.value.toLowerCase().trim();
+                    const brandCards = document.querySelectorAll('.brand-card');
+
+                    brandCards.forEach(card => {
+                        const brandName = card.querySelector('h5').textContent.toLowerCase();
+                        
+                        // Arama ile uyuşan kartları göster
+                        if (brandName.includes(searchValue) || searchValue === '') {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                });
+            })
+            .catch(error => console.error('Veri çekme hatası:', error));
+    </script>
+</body>
+</html>

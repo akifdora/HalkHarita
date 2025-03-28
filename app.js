@@ -39,6 +39,21 @@ const messageSchema = new mongoose.Schema({
 
 const Message = mongoose.model('Message', messageSchema);
 
+// Marka şeması
+const brandSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    logo: {
+        type: String,  // Logo URL'si
+        required: true
+    }
+});
+
+// Modeli oluştur
+const Brand = mongoose.model('Brand', brandSchema);
+
 // Statik Dosyalar
 app.use(express.static('public'));
 app.use('/img', express.static('assets/img'));
@@ -50,16 +65,55 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
 
+// Boykot Sayfası
+app.get('/boykot', (req, res) => {
+    res.sendFile(__dirname + '/public/boykot.html');
+});
+
+// Veritabanındaki kayıt sayısını almak için route
+app.get('/getStatics', async (req, res) => {
+    try {
+        // Report ve Message koleksiyonlarındaki döküman sayısı
+        const reportCount = await Report.countDocuments();
+        const messageCount = await Message.countDocuments();
+
+        // Aktif kullanıcı sayısı ve MongoDB kayıt sayılarıyla birlikte döndürme
+        res.json({
+            userCount, // Socket.io ile bağlı aktif kullanıcı sayısı
+            reportCount,
+            messageCount
+        });
+    } catch (error) {
+        console.error('Error fetching counts:', error);
+        res.status(500).json({ error: 'Failed to fetch counts' });
+    }
+});
+
+// API: Marka verilerini al
+app.get('/api/brands', async (req, res) => {
+    try {
+        const brands = await Brand.find();  // Veritabanındaki tüm markaları al
+        res.json(brands);  // JSON olarak döndür
+    } catch (err) {
+        res.status(500).json({ message: 'Sunucu hatası' });
+    }
+});
+
 // Socket.io Bağlantısı
 io.on('connection', (socket) => {
+    const userAgent = socket.handshake.headers['user-agent'];
+    const botKeywords = ['bot', 'crawl', 'spider', 'slurp', 'mediapartners'];
+    const isBot = botKeywords.some(keyword => userAgent.toLowerCase().includes(keyword));
 
-    userCount++;
-    io.emit('updateUserCount', userCount);
-
-    socket.on('disconnect', () => {
-        userCount--;
+    if (!isBot) {
+        userCount++;
         io.emit('updateUserCount', userCount);
-    });
+
+        socket.on('disconnect', () => {
+            userCount--;
+            io.emit('updateUserCount', userCount);
+        });
+    }
 
     // Yeni bildirim gönderildiğinde
     socket.on('sendReport', async (data) => {
@@ -86,7 +140,7 @@ io.on('connection', (socket) => {
             note,
             timestamp,
         });
-    });    
+    });
 
     // Haritadaki tüm bildirimleri yükle
     socket.on('getReports', async () => {

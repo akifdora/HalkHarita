@@ -14,31 +14,27 @@ const map = L.map('map', {
     maxBoundsViscosity: 1.0
 });
 
-// Kullanıcı konumu için geolocation 
 if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
         const { latitude, longitude } = position.coords;
         userLocation = position.coords;
 
-        // Harita kullanıcı konumunda başlayacak
         map.setView([latitude, longitude], 18);
 
-        // Bildirim ekleme çemberini güncelle veya oluştur
-        if (locationCircle) {
-            locationCircle.setLatLng([latitude, longitude]);
-        } else {
+        // Bildirim ekleme çemberi
+        if (!locationCircle) {
             locationCircle = L.circle([latitude, longitude], {
                 color: 'blue',
                 fillColor: 'blue',
                 fillOpacity: 0.1,
                 radius: 1000
             }).addTo(map);
+        } else {
+            locationCircle.setLatLng([latitude, longitude]);
         }
 
-        // Kullanıcı konumu işaretini güncelle veya oluştur
-        if (userMarker) {
-            userMarker.setLatLng([latitude, longitude]);
-        } else {
+        // Kullanıcı konumu işareti
+        if (!userMarker) {
             userMarker = L.marker([latitude, longitude], {
                 icon: L.icon({
                     iconUrl: 'img/my-location.png',
@@ -50,20 +46,52 @@ if (navigator.geolocation) {
             .addTo(map)
             .bindPopup(`Şu an buradasın!`)
             .openPopup();
+        } else {
+            userMarker.setLatLng([latitude, longitude]);
         }
 
     }, () => {
-        // Konum almada sorunu varsa, haritayı varsayılan bir konuma ayarla
-        map.setView([39.925533, 32.866287], 6); // Ankara
+        map.setView([39.925533, 32.866287], 6); // Ankara (Konum hatasında varsayılan konum)
+    }, {
+        enableHighAccuracy: true,
+        maximumAge: 0
     });
 } else {
-    // GeoLocation sorunu varsa, haritayı varsayılan bir konuma ayarla
-    map.setView([39.925533, 32.866287], 6); // Ankara
+    map.setView([39.925533, 32.866287], 6); // Ankara (GeoLocation desteklenmiyorsa)
 }
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
 }).addTo(map);
+
+// Konum güncelleme fonksiyonu
+function updateLocation(position) {
+    const { latitude, longitude } = position.coords;
+
+    // Eski marker ve çemberi kaldır
+    if (userMarker) map.removeLayer(userMarker);
+    if (locationCircle) map.removeLayer(locationCircle);
+
+    // Yeni marker ekle
+    userMarker = L.marker([latitude, longitude], {
+        icon: L.icon({
+            iconUrl: 'img/my-location.png',
+            iconSize: [50, 50],
+            iconAnchor: [25, 50],
+            popupAnchor: [0, -50]
+        })
+    })
+    .addTo(map)
+    .bindPopup(`Şu an buradasın!`)
+
+    // Yeni çember ekle (1 km yarıçap)
+    locationCircle = L.circle([latitude, longitude], {
+        color: 'blue',
+        fillColor: 'blue',
+        fillOpacity: 0.1,
+        radius: 1000
+    }).addTo(map);
+}
 
 const socket = io(); // Socket.io bağlantısı
 const chatButton = document.getElementById('chatButton'); // Sohbet kutusunu açma butonu
@@ -97,28 +125,25 @@ chatButton.addEventListener('click', () => {
     scrollToBottom();
 });
 
-// Mesaj gönderme butonu aksiyonu
-sendButton.addEventListener('click', () => {
+// Mesaj gönderme işlemi
+function sendMessage() {
     const message = messageInput.value.trim();
-    if (message) {
-        socket.emit('sendMessage', { message });
-        messageInput.value = '';  // Mesajı gönderdikten sonra input'u temizle
-        messageInput.focus(); // Klavye açık kalsın
-    }
-});
+    if (!message) return;
 
-// Mesaj yazma alanında Enter tuşuna basıldığında mesaj gönder
+    socket.emit('sendMessage', {
+        message,
+    });
+
+    messageInput.value = '';  // Mesajı gönderdikten sonra input'u temizle
+    messageInput.focus(); // Klavye açık kalsın
+}
+
+// Mesaj gönderme butonu ve Enter tuşu için tek fonksiyon
+sendButton.addEventListener('click', sendMessage);
 messageInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
-        event.preventDefault();  // Yeni satır ekleme durumunu kapatmak için
-
-        const message = messageInput.value.trim();
-        if (message) {
-            socket.emit('sendMessage', { message });
-            messageInput.value = '';  // Mesajı gönderdikten sonra input'u temizle
-        }
-
-        messageInput.focus(); // Klavye açık kalsın
+        event.preventDefault();
+        sendMessage();
     }
 });
 
@@ -310,16 +335,19 @@ document.getElementById('gotoLocationButton').addEventListener('click', () => {
             const { latitude, longitude } = position.coords;
             map.setView([latitude, longitude], 18); // Konum tespit edildiğinde haritayı o noktaya kaydır
 
+            // Eğer önceden bir kullanıcı marker'ı varsa, kaldır
             if (userMarker) {
                 map.removeLayer(userMarker);
             }
 
+            // Yeni marker'ı oluştur ve haritaya ekle
             const emojiIcon = L.divIcon({
                 className: 'location-emoji-icon',
                 html: "📍",
                 iconSize: [50, 50]
             });
-            const userMarker = L.marker([latitude, longitude], { icon: emojiIcon })
+
+            userMarker = L.marker([latitude, longitude], { icon: emojiIcon })
                 .addTo(map)
                 .bindPopup(`Şu an buradasın!`)
                 .openPopup();
@@ -328,16 +356,33 @@ document.getElementById('gotoLocationButton').addEventListener('click', () => {
         },
         {
             maximumAge: 0
-        }
-    );
+        });
     } else {
         hhAlert("Geolocation desteği mevcut değil.");
     }
 });
 
-// Kullanıcı sayısını güncelleme
-socket.on('updateUserCount', (count) => {
-    document.getElementById('userCountDisplay').innerText = `Çevrimiçi: ${count}`;
+window.addEventListener('DOMContentLoaded', () => {
+    setInterval(() => {
+        // Backend'e bir istek gönderme (MongoDB'den veri çekiyoruz)
+        fetch('/getStatics')
+            .then(response => response.json()) // JSON olarak dönen veriyi işleme
+            .then(data => {
+                const { userCount, reportCount, messageCount } = data;
+
+                // Çevrimiçi kullanıcı sayısını güncelle
+                document.getElementById('onlineUsers').textContent = `Çevrimiçi: ${userCount}`;
+
+                // Toplam mesaj sayısını güncelle
+                document.getElementById('totalMessages').textContent = `Toplam Mesaj: ${messageCount}`;
+
+                // Toplam bildirim sayısını güncelle
+                document.getElementById('totalReports').textContent = `Toplam Bildirim: ${reportCount}`;
+            })
+            .catch(error => {
+                console.error('Error fetching user counts:', error);
+            });
+    }, 1000); // 1 saniye aralıklarla veri yenilenmesi için
 });
 
 // Veritabanındaki bildirimleri yükle
