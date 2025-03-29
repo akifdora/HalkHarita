@@ -87,6 +87,23 @@
             border-radius: 8px;
             margin-bottom: 15px; /* Input ile araya boşluk ekliyoruz */
         }
+
+        #filterButtons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 1rem;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+
+        @media (min-width: 640px) {
+            .filter-btn {
+                flex: 1 1 auto;
+                max-width: none;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-900 p-4">
@@ -107,24 +124,30 @@
         </div>
     </div>
 
-    <!-- İçerik Alanı -->
     <div class="max-w-4xl mx-auto brandList mt-16">
-        <!-- Duyuru Mesajı -->
         <div id="alertBox" class="bg-yellow-500 text-white p-4 rounded-lg mb-4">
             <i class="fas fa-exclamation-triangle mr-3"></i>Boykot listesi bulunan sitelere diktatör rejim tarafından erişim engeli uygulanmaktadır!
         </div>
 
-        <!-- Marka Sayısı -->
         <p id="brandCountText" class="text-gray-400 text-xs mb-2"></p>
 
-        <!-- Arama Alanı -->
         <input 
         type="text" 
         id="searchInput" 
         placeholder="Boykot markası arayın..." 
         class="w-full p-3 mb-4 border border-gray-600 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-        
-        <!-- Liste -->
+
+        <!-- Filtreleme Butonları -->
+        <div id="filterButtons" class="flex gap-2 mb-4">
+            <button data-filter="all" class="filter-btn bg-blue-500 text-white px-1 py-1 rounded-lg">Tümü</button>
+            <button data-filter="akaryakit" class="filter-btn bg-red-500 text-white px-1 py-1 rounded-lg">Akaryakıt</button>
+            <button data-filter="alisveris" class="filter-btn bg-purple-500 text-white px-1 py-1 rounded-lg">Alışveriş</button>
+            <button data-filter="gida" class="filter-btn bg-green-500 text-white px-1 py-1 rounded-lg">Gıda</button>
+            <button data-filter="dukkan" class="filter-btn bg-green-500 text-white px-1 py-1 rounded-lg">Dükkan</button>
+            <button data-filter="medya" class="filter-btn bg-green-500 text-white px-1 py-1 rounded-lg">Medya</button>
+
+        </div>
+
         <div id="brandList" class="space-y-4"></div>
     </div>
 
@@ -146,8 +169,6 @@
             })
             .catch(error => console.error('Veri çekme hatası:', error));
 
-
-        // Verileri almak için fetch kullanıyoruz
         fetch('/api/brands')
             .then(response => response.json())
             .then(data => {
@@ -156,50 +177,38 @@
                 data.sort((a, b) => a.name.localeCompare(b.name));
 
                 data.forEach(brand => {
-                const brandCard = document.createElement('div');
-                brandCard.classList.add('brand-card', 'flex', 'items-center', 'bg-gray-800', 'border', 'border-gray-700', 'rounded-lg', 'shadow-sm');
-                
-                // Logo ekleme
-                const brandImage = document.createElement('img');
-                brandImage.classList.add('object-fit', 'w-24', 'h-24', 'rounded-s-lg');
-                brandImage.src = brand.logo;
-                brandImage.alt = brand.name;
+                    const brandCard = document.createElement('div');
+                    brandCard.classList.add('brand-card', 'flex', 'items-center', 'bg-gray-800', 'border', 'border-gray-700', 'rounded-lg', 'shadow-sm');
+                    brandCard.setAttribute('data-type', brand.type);
 
-                // Marka adı ekleme
-                const brandName = document.createElement('h5');
-                brandName.classList.add('text-xl', 'font-bold', 'text-white');
-                brandName.textContent = brand.name;
+                    const brandImage = document.createElement('img');
+                    brandImage.classList.add('object-fit', 'w-24', 'h-24', 'rounded-s-lg');
+                    brandImage.src = brand.logo;
+                    brandImage.alt = brand.name;
 
-                // Boykot etiketi ekleme
-                const boycottTag = document.createElement('span');
-                if(brand.status == 1) {
-                    boycottTag.classList.add(
-                        'text-red-500',
-                        'text-xs',
-                        'font-thin',
-                    );
-                    boycottTag.textContent = 'Kesin boykot markasıdır!';
-                } else if(brand.status == 0) {
-                    boycottTag.classList.add(
-                        'text-orange-500',
-                        'text-xs',
-                        'font-thin',
-                    );
-                    boycottTag.textContent = 'Boykot olduğu kesin değil!';
-                }
-                
+                    const brandName = document.createElement('h5');
+                    brandName.classList.add('text-xl', 'font-bold', 'text-white');
+                    brandName.textContent = brand.name;
 
-                // Markayı card'a ekleme
-                const cardContent = document.createElement('div');
-                cardContent.classList.add('p-4', 'flex-1');
-                cardContent.appendChild(brandName);
-                cardContent.appendChild(boycottTag);
+                    const boycottTag = document.createElement('span');
+                    if(brand.status == 1) {
+                        boycottTag.classList.add('text-red-500', 'text-xs', 'font-thin');
+                        boycottTag.textContent = 'Kesin boykot markasıdır!';
+                    } else if(brand.status == 0) {
+                        boycottTag.classList.add('text-orange-500', 'text-xs', 'font-thin');
+                        boycottTag.textContent = 'Boykot olduğu kesin değil!';
+                    }
 
-                brandCard.appendChild(brandImage);
-                brandCard.appendChild(cardContent);
+                    const cardContent = document.createElement('div');
+                    cardContent.classList.add('p-4', 'flex-1');
+                    cardContent.appendChild(brandName);
+                    cardContent.appendChild(boycottTag);
 
-                brandList.appendChild(brandCard);
-            });
+                    brandCard.appendChild(brandImage);
+                    brandCard.appendChild(cardContent);
+
+                    brandList.appendChild(brandCard);
+                });
 
                 // Arama işlemi
                 searchInput.addEventListener('input', () => {
@@ -208,13 +217,29 @@
 
                     brandCards.forEach(card => {
                         const brandName = card.querySelector('h5').textContent.toLowerCase();
-                        
-                        // Arama ile uyuşan kartları göster
                         if (brandName.includes(searchValue) || searchValue === '') {
                             card.classList.remove('hidden');
                         } else {
                             card.classList.add('hidden');
                         }
+                    });
+                });
+
+                // Filtreleme işlemi
+                const filterButtons = document.querySelectorAll('.filter-btn');
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const selectedFilter = button.getAttribute('data-filter');
+                        const brandCards = document.querySelectorAll('.brand-card');
+
+                        brandCards.forEach(card => {
+                            const brandType = card.getAttribute('data-type');
+                            if (selectedFilter === 'all' || selectedFilter === brandType) {
+                                card.classList.remove('hidden');
+                            } else {
+                                card.classList.add('hidden');
+                            }
+                        });
                     });
                 });
             })
