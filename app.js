@@ -3,7 +3,9 @@ const http = require('http');
 const socketIo = require('socket.io');
 require('dotenv').config();
 const mongoose = require('mongoose');
+const fs = require('fs');
 const cron = require('node-cron');
+const moment = require('moment');
 const escapeHtml = require('escape-html');
 
 const app = express();
@@ -250,12 +252,41 @@ io.on('connection', (socket) => {
     });
 });
 
-// Her gün sabah saat 8'de yer imlerini sil
+// Backup klasörünün yolu
+const backupDir = './backups';
+
+// Her gün sabah saat 8'de çalışacak cron job
 cron.schedule('0 8 * * *', async () => {
     try {
+        // Backup klasörünü kontrol et, yoksa oluştur
+        if (!fs.existsSync(backupDir)) {
+            fs.mkdirSync(backupDir);
+        }
+
+        // Bugünün tarihini al
+        const today = moment().format('DDMMYYYY');
+        
+        // Dosya adlarını oluştur
+        const reportFileName = `reports_${today}.json`;
+        const messageFileName = `messages_${today}.json`;
+
+        // Backup dosyalarının yolları
+        const reportBackupPath = `${backupDir}/${reportFileName}`;
+        const messageBackupPath = `${backupDir}/${messageFileName}`;
+
+        // Veritabanındaki verileri çek
+        const reports = await Report.find({});
+        const messages = await Message.find({});
+
+        // /backups klasörüne report dosyasını kaydet
+        fs.writeFileSync(reportBackupPath, JSON.stringify(reports, null, 2), 'utf8');
+
+        // /backups klasörüne message dosyasını kaydet
+        fs.writeFileSync(messageBackupPath, JSON.stringify(messages, null, 2), 'utf8');
+
+        // Veritabanını temizle
         await Report.deleteMany({});
         await Message.deleteMany({});
-        console.log('Yer imleri temizlendi!');
     } catch (err) {
         console.error('Veritabanı temizlenirken hata oluştu:', err);
     }
