@@ -319,7 +319,7 @@ function hhAlert(message) {
     const alertMessage = document.getElementById('alertMessage');
     alertMessage.textContent = message;
     alertBox.style.display = 'block';
-    setTimeout(closeAlert, 5000);
+    setTimeout(closeAlert, 10000);
 }
 
 // Alert kapatma fonksiyonu
