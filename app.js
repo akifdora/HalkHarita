@@ -25,6 +25,7 @@ const reportSchema = new mongoose.Schema({
     type: String,                                   // Bildirim tipi
     emoji: String,                                  // Emoji
     note: String,                                   // Not
+    count: { type: Number, default: 2 },       // Bildirim sayısı
     timestamp: { type: Date, default: Date.now },   // Bildirimin gönderilme tarihi
 });
 
@@ -152,6 +153,13 @@ io.on('connection', (socket) => {
         const reports = await Report.find();
         socket.emit('loadReports', reports);
     });
+
+    socket.on('updateReportCount', async ({ lat, lng, increment }) => {
+    await Report.updateOne(
+        { lat, lng },
+        { $inc: { count: increment } }
+    );
+});
 
     // Spam koruması için değişkenler
     const rateLimitMap = new Map();

@@ -340,17 +340,17 @@ document.getElementById('gotoLocationButton').addEventListener('click', () => {
                 map.removeLayer(userMarker);
             }
 
-            // Yeni marker'ı oluştur ve haritaya ekle
-            const emojiIcon = L.divIcon({
-                className: 'location-emoji-icon',
-                html: "📍",
-                iconSize: [50, 50]
-            });
-
-            userMarker = L.marker([latitude, longitude], { icon: emojiIcon })
-                .addTo(map)
-                .bindPopup(`Şu an buradasın!`)
-                .openPopup();
+            // Yeni marker ekle
+            userMarker = L.marker([latitude, longitude], {
+                icon: L.icon({
+                    iconUrl: 'img/my-location.png',
+                    iconSize: [50, 50],
+                    iconAnchor: [25, 50],
+                    popupAnchor: [0, -50]
+                })
+            })
+            .addTo(map)
+            .bindPopup(`Şu an buradasın!`)
         }, () => {
             hhAlert("Konum alınırken bir hata oluştu.");
         },
