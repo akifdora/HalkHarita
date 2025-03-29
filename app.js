@@ -20,12 +20,12 @@ mongoose.connect('mongodb://localhost:27017/protestoHaritasi')
 
 // Bildirim Modeli
 const reportSchema = new mongoose.Schema({
-    lat: Number, // Enlem
-    lng: Number, // Boylam
-    type: String, // Bildirim tipi
-    emoji: String, // Emoji
-    note: String, // Not
-    timestamp: { type: Date, default: Date.now }, // Bildirimin gönderilme tarihi
+    lat: Number,                                    // Enlem
+    lng: Number,                                    // Boylam
+    type: String,                                   // Bildirim tipi
+    emoji: String,                                  // Emoji
+    note: String,                                   // Not
+    timestamp: { type: Date, default: Date.now },   // Bildirimin gönderilme tarihi
 });
 
 
@@ -41,14 +41,9 @@ const Message = mongoose.model('Message', messageSchema);
 
 // Marka şeması
 const brandSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    logo: {
-        type: String,  // Logo URL'si
-        required: true
-    }
+    name: String,       // Marka adı
+    logo: String,       // Logo URL'si
+    status: Number,     // Boykot durumu (0: Belirsiz, 1: Boykot var)
 });
 
 // Modeli oluştur
